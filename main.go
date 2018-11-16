@@ -23,6 +23,9 @@ func ConfigureMux() *http.ServeMux {
 }
 
 func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }
 
 func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
