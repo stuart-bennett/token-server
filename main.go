@@ -29,4 +29,7 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 }
 
 func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }
