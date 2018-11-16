@@ -1,7 +1,6 @@
 package main
 
-import (
-	"encoding/json"
+import ( "encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,19 +12,24 @@ var c http.Client
 func TestMain(t *testing.T) {
 	setup()
 	defer teardown()
-	t.Run("/login should only accept POST requests", func(t *testing.T) {
-		onlySingleMethod(http.MethodPost, LoginPath, t)
+	t.Run("Login endpoint", func(t *testing.T) {
+		t.Run("Should only accept POST requests", func(t *testing.T) {
+			onlySingleMethod(http.MethodPost, LoginPath, t)
+		})
+
+		t.Run(
+			"When successful should return JSON response containing login token",
+			loginResponseTest)
 	})
 
-	t.Run("Username should only accept GET requests", func(t *testing.T) {
+	t.Run("/username should only accept GET requests", func(t *testing.T) {
 		onlySingleMethod(http.MethodGet, UsernamePath, t)
 	})
 
-	t.Run("When using valid credentials, POST /login should return JSON response containing login token", LoginResponseTest)
 }
 
-func LoginResponseTest(t *testing.T) {
-	res, err := http.Post(ts.URL + LoginPath, "application/json", nil)
+func loginResponseTest(t *testing.T) {
+	res, err := http.Post(ts.URL+LoginPath, "application/json", nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -53,9 +57,9 @@ func teardown() {
 	ts.Close()
 }
 
-func filter(items []string, f func(item string) bool) []string {
+func (ms StandardHttpMethods) filter(f func(item string) bool) []string {
 	var result []string
-	for _, item := range items {
+	for _, item := range ms {
 		if f(item) {
 			result = append(result, item)
 		}
@@ -64,7 +68,9 @@ func filter(items []string, f func(item string) bool) []string {
 	return result
 }
 
-var standardHttpMethods [8]string = [8]string{
+type StandardHttpMethods [8]string
+
+var standardHttpMethods StandardHttpMethods = StandardHttpMethods {
 	http.MethodConnect,
 	http.MethodDelete,
 	http.MethodGet,
@@ -76,7 +82,7 @@ var standardHttpMethods [8]string = [8]string{
 }
 
 func onlySingleMethod(m string, path string, t *testing.T) {
-	ms := filter(standardHttpMethods[0:], func(item string) bool {
+	ms := standardHttpMethods.filter(func(item string) bool {
 		return item != m
 	})
 	target := ts.URL + path
