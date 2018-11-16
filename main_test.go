@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,12 +14,34 @@ func TestMain(t *testing.T) {
 	setup()
 	defer teardown()
 	t.Run("/login should only accept POST requests", func(t *testing.T) {
-		OnlySingleMethod(http.MethodPost, LoginPath, t)
+		onlySingleMethod(http.MethodPost, LoginPath, t)
 	})
 
 	t.Run("Username should only accept GET requests", func(t *testing.T) {
-		OnlySingleMethod(http.MethodGet, UsernamePath, t)
+		onlySingleMethod(http.MethodGet, UsernamePath, t)
 	})
+
+	t.Run("When using valid credentials, POST /login should return JSON response containing login token", LoginResponseTest)
+}
+
+func LoginResponseTest(t *testing.T) {
+	res, err := http.Post(ts.URL + LoginPath, "application/json", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if ct := res.Header.Get("Content-Type"); ct != "application/json" {
+		t.Errorf("Got: %s Want: %s", ct, "application/json")
+	}
+
+	var r = LoginTokenResponse{}
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		t.Error(err)
+	}
+
+	if r.Token == "" {
+		t.Fail()
+	}
 }
 
 func setup() {
@@ -52,7 +75,7 @@ var standardHttpMethods [8]string = [8]string{
 	http.MethodTrace,
 }
 
-func OnlySingleMethod(m string, path string, t *testing.T) {
+func onlySingleMethod(m string, path string, t *testing.T) {
 	ms := filter(standardHttpMethods[0:], func(item string) bool {
 		return item != m
 	})

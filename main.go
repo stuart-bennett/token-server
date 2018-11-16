@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -26,10 +27,17 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "{ \"token\": \"temp-token\" }")
 }
 
 func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+type LoginTokenResponse struct {
+	Token string
 }
