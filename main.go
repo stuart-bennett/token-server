@@ -6,7 +6,29 @@ import (
 	"net/http"
 )
 
+type userStore map[string]string
+
 type tokenStore map[string]string
+
+type app struct {
+	Users  userStore
+	Tokens tokenStore
+}
+
+func (a app) NewToken(user string) string {
+	token := "test-token"
+	a.Tokens[user] = token
+	return token
+}
+
+func (a app) authenticate(u string, p string) bool {
+	storedPwd, ok := a.Users[u]
+	if !ok {
+		return false
+	}
+
+	return p == storedPwd
+}
 
 const TokenRequestHeader string = "X-Auth-Token"
 const LoginPath string = "/login"
@@ -17,14 +39,24 @@ func main() {
 }
 
 func ConfigureMux() *http.ServeMux {
-	ts := tokenStore{}
+	a := newApp()
 	m := http.NewServeMux()
-	m.Handle(LoginPath, http.HandlerFunc(ts.login))
-	m.Handle(UsernamePath, http.HandlerFunc(ts.username))
+	m.Handle(LoginPath, http.HandlerFunc(a.login))
+	m.Handle(UsernamePath, http.HandlerFunc(a.username))
 	return m
 }
 
-func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
+func newApp() app {
+	ts := tokenStore{}
+
+	// seed with an initial user
+	us := userStore{
+		"admin": "admin1000",
+	}
+	return app{Users: us, Tokens: ts}
+}
+
+func (a app) login(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -36,8 +68,9 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if authenticate(ltr.Username, ltr.Password) {
-		token := newLoginToken()
+	if a.authenticate(ltr.Username, ltr.Password) {
+		// Add token to store, associated with username
+		token := a.NewToken(ltr.Username)
 		w.Header().Set("Content-Type", "application/json")
 		resp, err := json.Marshal(LoginTokenResponse{
 			Token: token,
@@ -75,15 +108,11 @@ func validateLoginTokenRequest(req *http.Request) (LoginTokenRequest, bool) {
 	return ltr, true
 }
 
-func authenticate(u string, p string) bool {
-	return u == "admin" && p == "admin1000"
-}
-
 func verifyToken(t string) bool {
 	return t == "test-token"
 }
 
-func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
+func (a app) username(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
