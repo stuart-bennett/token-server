@@ -9,6 +9,7 @@ import (
 
 type tokenStore map[string]string
 
+const TokenRequestHeader string = "X-Auth-Token"
 const LoginPath string = "/login"
 const UsernamePath string = "/username"
 
@@ -67,6 +68,17 @@ func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+
+	_, ok := validateUsernameRequest(req)
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
+
+func validateUsernameRequest(r *http.Request) (string, bool) {
+	token := r.Header.Get(TokenRequestHeader)
+	return token, token != ""
 }
 
 type LoginTokenRequest struct {

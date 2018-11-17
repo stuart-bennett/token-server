@@ -33,9 +33,48 @@ func TestMain(t *testing.T) {
 			loginResponseTest)
 	})
 
-	t.Run("/username should only accept GET requests", func(t *testing.T) {
-		onlySingleMethod(http.MethodGet, UsernamePath, t)
+	t.Run("Username endpoint", func(t *testing.T) {
+		t.Run("Should only accept GET requests", func(t *testing.T) {
+			onlySingleMethod(http.MethodGet, UsernamePath, t)
+		})
+
+		t.Run(
+			"Missing token header value should respond with 401",
+			testMissingAuthHeader)
+
+		t.Run(
+			"Valid token in header should respond with 200",
+			testValidToken)
 	})
+}
+
+func testMissingAuthHeader(t *testing.T) {
+	// no X-Auth-Token header!
+	res, err := http.Get(ts.URL + UsernamePath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("Got: %d. Want: %d", res.StatusCode, http.StatusBadRequest)
+	}
+}
+
+func testValidToken(t *testing.T) {
+	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	req.Header.Set(TokenRequestHeader, "token-value")
+	res, err := c.Do(req)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("Got: %d. Want: %d", res.StatusCode, http.StatusOK)
+	}
 }
 
 func testMalformedRequest(t *testing.T) {
