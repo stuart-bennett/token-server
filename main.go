@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/rand"
+	"crypto/sha512"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -16,9 +19,22 @@ type app struct {
 }
 
 func (a app) NewToken(user string) string {
-	token := "test-token"
+	token := newToken()
 	a.Tokens[token] = user
 	return token
+}
+
+func newToken() string {
+	// A sequence of 100 random numbers
+	n := 100
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(fmt.Sprintf("Could not generate a secure random byte sequence to create a login token because %s", err))
+	}
+
+	checksum := sha512.Sum512(b)
+	return fmt.Sprintf("%x", checksum)
 }
 
 func (a app) authenticate(u string, p string) bool {
@@ -58,6 +74,7 @@ func newApp() app {
 	us := userStore{
 		"admin": "admin1000",
 	}
+
 	return app{Users: us, Tokens: ts}
 }
 

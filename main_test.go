@@ -81,13 +81,40 @@ func testInvalidToken(t *testing.T) {
 	}
 }
 
+func acquireValidToken() (string, error) {
+	res, err := http.Post(
+		ts.URL+LoginPath,
+		"application/json",
+		newLoginRequestJson("admin", "admin1000"))
+
+	if err != nil {
+		return "", err
+	}
+
+	var rsp LoginTokenResponse
+	if err := json.NewDecoder(res.Body).Decode(&rsp); err != nil {
+		return "", err
+	}
+
+	if rsp.Token == "" {
+		return "", fmt.Errorf("No token was produced")
+	}
+
+	return rsp.Token, nil
+}
+
 func testValidToken(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set(TokenRequestHeader, "test-token")
+	token, err := acquireValidToken()
+	if err != nil {
+		t.Error(err)
+	}
+
+	req.Header.Set(TokenRequestHeader, token)
 	res, err := c.Do(req)
 	if err != nil {
 		t.Error(err)
