@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -38,12 +37,28 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if authenticate(ltr.Username, ltr.Password) {
+		token := newLoginToken()
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, "{ \"token\": \"temp-token\" }")
+		resp, err := json.Marshal(LoginTokenResponse{
+			Token: token,
+		})
+
+		if err != nil {
+			if err != nil {
+				log.Printf("Couldn't create json response because %s", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}
+
+		w.Write(resp)
 		return
 	}
 
 	w.WriteHeader(http.StatusUnauthorized)
+}
+
+func newLoginToken() string {
+	return "temp-token"
 }
 
 func validateLoginTokenRequest(req *http.Request) (LoginTokenRequest, bool) {
