@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,16 +27,38 @@ func ConfigureMux() *http.ServeMux {
 func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, "{ \"token\": \"temp-token\" }")
+	var ltr LoginTokenRequest;
+	if err := json.NewDecoder(req.Body).Decode(&ltr); err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if authenticate(ltr.Username, ltr.Password) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, "{ \"token\": \"temp-token\" }")
+		return
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+}
+
+func authenticate(u string, p string) bool {
+	return u == "admin" && p == "admin1000"
 }
 
 func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+type LoginTokenRequest struct {
+	Username string;
+	Password string;
 }
 
 type LoginTokenResponse struct {

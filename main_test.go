@@ -1,6 +1,8 @@
 package main
 
 import ( "encoding/json"
+	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,6 +20,10 @@ func TestMain(t *testing.T) {
 		})
 
 		t.Run(
+			"Invalid credentials should respond with 401",
+			invalidCredentialsTest)
+
+		t.Run(
 			"When successful should return JSON response containing login token",
 			loginResponseTest)
 	})
@@ -25,11 +31,42 @@ func TestMain(t *testing.T) {
 	t.Run("/username should only accept GET requests", func(t *testing.T) {
 		onlySingleMethod(http.MethodGet, UsernamePath, t)
 	})
+}
 
+func invalidCredentialsTest(t *testing.T) {
+	res, err := http.Post(
+		ts.URL+LoginPath,
+		"application/json",
+		newLoginRequestJson("admin", "admin999"))
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != 401 {
+		t.Errorf("Got: %d. Want %d", res.StatusCode, 401)
+	}
+}
+
+func newLoginRequestJson(u string, p string) *bytes.Buffer {
+	json, err := json.Marshal(LoginTokenRequest {
+		Username: u,
+		Password: p,
+	})
+
+	if err != nil {
+		panic(fmt.Sprintf("Couldn't create login request, %s", err))
+	}
+
+	return bytes.NewBuffer(json)
 }
 
 func loginResponseTest(t *testing.T) {
-	res, err := http.Post(ts.URL+LoginPath, "application/json", nil)
+	res, err := http.Post(
+		ts.URL+LoginPath,
+		"application/json",
+		newLoginRequestJson("admin", "admin1000"))
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -112,7 +149,7 @@ func onlySingleMethod(m string, path string, t *testing.T) {
 		t.Error(err)
 	}
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode == http.StatusMethodNotAllowed {
 		t.Errorf("Method = %s, Response Status: %d", http.MethodPost, res.StatusCode)
 	}
 }
