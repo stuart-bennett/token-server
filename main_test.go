@@ -43,7 +43,11 @@ func TestMain(t *testing.T) {
 			testMissingAuthHeader)
 
 		t.Run(
-			"Valid token in header should respond with 200",
+			"Invalid token in header should respond with 401",
+			testInvalidToken)
+
+		t.Run(
+			"Valid token in header should respond with 200 & username in body",
 			testValidToken)
 	})
 }
@@ -60,13 +64,30 @@ func testMissingAuthHeader(t *testing.T) {
 	}
 }
 
+func testInvalidToken(t *testing.T) {
+	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	req.Header.Set(TokenRequestHeader, "not-valid")
+	res, err := c.Do(req)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Got: %d. Want: %d", res.StatusCode, http.StatusUnauthorized)
+	}
+}
+
 func testValidToken(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set(TokenRequestHeader, "token-value")
+	req.Header.Set(TokenRequestHeader, "test-token")
 	res, err := c.Do(req)
 	if err != nil {
 		t.Error(err)
@@ -74,6 +95,15 @@ func testValidToken(t *testing.T) {
 
 	if res.StatusCode != http.StatusOK {
 		t.Errorf("Got: %d. Want: %d", res.StatusCode, http.StatusOK)
+	}
+
+	var resp UsernameResponse
+	if err := json.NewDecoder(res.Body).Decode(&resp); err != nil {
+		t.Error(err)
+	}
+
+	if resp.Username != "admin" {
+		t.Fail()
 	}
 }
 
