@@ -17,7 +17,7 @@ type app struct {
 
 func (a app) NewToken(user string) string {
 	token := "test-token"
-	a.Tokens[user] = token
+	a.Tokens[token] = user
 	return token
 }
 
@@ -28,6 +28,11 @@ func (a app) authenticate(u string, p string) bool {
 	}
 
 	return p == storedPwd
+}
+
+func (a app) verifyToken(t string) bool {
+	_, ok := a.Tokens[t]
+	return ok
 }
 
 const TokenRequestHeader string = "X-Auth-Token"
@@ -108,10 +113,6 @@ func validateLoginTokenRequest(req *http.Request) (LoginTokenRequest, bool) {
 	return ltr, true
 }
 
-func verifyToken(t string) bool {
-	return t == "test-token"
-}
-
 func (a app) username(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -123,7 +124,7 @@ func (a app) username(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if verifyToken(token) {
+	if a.verifyToken(token) {
 		resp, err := json.Marshal(UsernameResponse{
 			Username: "admin",
 		})
