@@ -30,9 +30,8 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var ltr LoginTokenRequest;
-	if err := json.NewDecoder(req.Body).Decode(&ltr); err != nil {
-		log.Print(err)
+	ltr, ok := validateLoginTokenRequest(req)
+	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -46,6 +45,20 @@ func (ts tokenStore) login(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
+func validateLoginTokenRequest(req *http.Request) (LoginTokenRequest, bool) {
+	var ltr LoginTokenRequest
+	if err := json.NewDecoder(req.Body).Decode(&ltr); err != nil {
+		log.Printf("Could not decode request because %s", err)
+		return LoginTokenRequest{}, false
+	}
+
+	if ltr.Username == "" || ltr.Password == "" {
+		return LoginTokenRequest{}, false
+	}
+
+	return ltr, true
+}
+
 func authenticate(u string, p string) bool {
 	return u == "admin" && p == "admin1000"
 }
@@ -57,8 +70,8 @@ func (ts tokenStore) username(w http.ResponseWriter, req *http.Request) {
 }
 
 type LoginTokenRequest struct {
-	Username string;
-	Password string;
+	Username string
+	Password string
 }
 
 type LoginTokenResponse struct {

@@ -1,7 +1,8 @@
 package main
 
-import ( "encoding/json"
+import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +21,10 @@ func TestMain(t *testing.T) {
 		})
 
 		t.Run(
+			"Malformed request should respond with 400",
+			testMalformedRequest)
+
+		t.Run(
 			"Invalid credentials should respond with 401",
 			invalidCredentialsTest)
 
@@ -31,6 +36,36 @@ func TestMain(t *testing.T) {
 	t.Run("/username should only accept GET requests", func(t *testing.T) {
 		onlySingleMethod(http.MethodGet, UsernamePath, t)
 	})
+}
+
+func testMalformedRequest(t *testing.T) {
+	reqs := []string{
+		"{ \"username\": 100, \"password\": true }",
+		"{ \"username\": \"100\", \"password\": true }",
+		"{ \"username\": 100, \"password\": \"test\" }",
+		"{ \"username\": \"100\", }",
+		"{ \"password\": true }",
+		"{ }",
+	}
+
+	for _, req := range reqs {
+		res, err := http.Post(
+			ts.URL+LoginPath,
+			"application/json",
+			bytes.NewBufferString(req))
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		if res.StatusCode != http.StatusBadRequest {
+			t.Errorf(
+				"%s - Got: %d. Want: %d",
+				req,
+				res.StatusCode,
+				http.StatusBadRequest)
+		}
+	}
 }
 
 func invalidCredentialsTest(t *testing.T) {
@@ -49,7 +84,7 @@ func invalidCredentialsTest(t *testing.T) {
 }
 
 func newLoginRequestJson(u string, p string) *bytes.Buffer {
-	json, err := json.Marshal(LoginTokenRequest {
+	json, err := json.Marshal(LoginTokenRequest{
 		Username: u,
 		Password: p,
 	})
@@ -107,7 +142,7 @@ func (ms StandardHttpMethods) filter(f func(item string) bool) []string {
 
 type StandardHttpMethods [8]string
 
-var standardHttpMethods StandardHttpMethods = StandardHttpMethods {
+var standardHttpMethods StandardHttpMethods = StandardHttpMethods{
 	http.MethodConnect,
 	http.MethodDelete,
 	http.MethodGet,
