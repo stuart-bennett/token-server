@@ -1,0 +1,9 @@
+version: '3'
+services:
+    server:
+        build: .
+        ports:
+            - "8000:8000"
+        command: /go/bin/server -r redis:6379
+    redis:
+        image: "redis:alpine"
