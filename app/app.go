@@ -17,6 +17,7 @@ func NewApp(ts stores.TokenStore) App {
 	// seed with an initial user
 	us := userStore{
 		"admin": "admin1000",
+		"someone-else": "password123",
 	}
 
 	return App{Users: us, Tokens: ts}
