@@ -23,7 +23,7 @@ func (a App) Username(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if a.VerifyToken(token) {
+	if a.Tokens.VerifyToken(token) {
 		resp, err := json.Marshal(UsernameResponse{
 			Username: "admin",
 		})

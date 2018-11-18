@@ -9,10 +9,11 @@ import (
 const (
 	LoginPath    string = "/login"
 	UsernamePath string = "/username"
+	RedisAddr    string = "172.17.0.2:6379"
 )
 
 func main() {
-	log.Fatal(http.ListenAndServe("localhost:8000", ConfigureMux()))
+	log.Fatal(http.ListenAndServe(":8000", ConfigureMux()))
 }
 
 func ConfigureMux() *http.ServeMux {

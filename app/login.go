@@ -30,7 +30,7 @@ func (a App) Login(w http.ResponseWriter, req *http.Request) {
 
 	if a.Authenticate(ltr.Username, ltr.Password) {
 		// Add token to store, associated with username
-		token := a.NewToken(ltr.Username)
+		token := a.Tokens.NewToken(ltr.Username)
 		w.Header().Set("Content-Type", "application/json")
 		resp, err := json.Marshal(LoginTokenResponse{
 			Token: token,
