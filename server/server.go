@@ -12,7 +12,7 @@ import (
 const (
 	LoginPath    string = "/login"
 	UsernamePath string = "/username"
-	ListenPort	 int    = 8000
+	ListenPort   int    = 8000
 )
 
 var redisAddr = flag.String(
@@ -22,7 +22,7 @@ var redisAddr = flag.String(
 func main() {
 	flag.Parse()
 	log.Fatal(http.ListenAndServe(
-		":" + strconv.Itoa(ListenPort),
+		":"+strconv.Itoa(ListenPort),
 		ConfigureMux(getStore())))
 }
 

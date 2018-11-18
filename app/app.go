@@ -16,7 +16,7 @@ type App struct {
 func NewApp(ts stores.TokenStore) App {
 	// seed with an initial user
 	us := userStore{
-		"admin": "admin1000",
+		"admin":        "admin1000",
 		"someone-else": "password123",
 	}
 
