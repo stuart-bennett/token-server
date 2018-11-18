@@ -28,26 +28,26 @@ func (a App) Login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if a.Authenticate(ltr.Username, ltr.Password) {
-		// Add token to store, associated with username
-		token := a.Tokens.NewToken(ltr.Username)
-		w.Header().Set("Content-Type", "application/json")
-		resp, err := json.Marshal(LoginTokenResponse{
-			Token: token,
-		})
-
-		if err != nil {
-			if err != nil {
-				log.Printf("Couldn't create json response because %s", err)
-				w.WriteHeader(http.StatusInternalServerError)
-			}
-		}
-
-		w.Write(resp)
+	if !a.Authenticate(ltr.Username, ltr.Password) {
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	w.WriteHeader(http.StatusUnauthorized)
+	// Add token to store, associated with username
+	token := a.Tokens.NewToken(ltr.Username)
+	w.Header().Set("Content-Type", "application/json")
+	resp, err := json.Marshal(LoginTokenResponse{
+		Token: token,
+	})
+
+	if err != nil {
+		if err != nil {
+			log.Printf("Couldn't create json response because %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+
+	w.Write(resp)
 }
 
 func validateLoginTokenRequest(req *http.Request) (LoginTokenRequest, bool) {
