@@ -37,6 +37,7 @@ func (a App) Username(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(resp)
 }
 
