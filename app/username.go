@@ -7,7 +7,7 @@ import (
 )
 
 type UsernameResponse struct {
-	Username string
+	Username string `json:"username"`
 }
 
 // GET /username
