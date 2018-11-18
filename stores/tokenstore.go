@@ -8,7 +8,7 @@ import (
 
 type TokenStore interface {
 	NewToken(user string) string
-	VerifyToken(token string) bool
+	VerifyToken(token string) (string, bool)
 }
 
 func newToken() string {

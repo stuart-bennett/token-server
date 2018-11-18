@@ -8,7 +8,7 @@ func (ts InMemoryTokenStore) NewToken(user string) string {
 	return token
 }
 
-func (ts InMemoryTokenStore) VerifyToken(token string) bool {
-	_, ok := ts[token]
-	return ok
+func (ts InMemoryTokenStore) VerifyToken(token string) (string, bool) {
+	username, ok := ts[token]
+	return username, ok
 }

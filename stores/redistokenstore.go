@@ -35,7 +35,7 @@ func (ts RedisTokenStore) NewToken(user string) string {
 	return token
 }
 
-func (ts RedisTokenStore) VerifyToken(token string) bool {
+func (ts RedisTokenStore) VerifyToken(token string) (string, bool) {
 	log.Printf(token)
 	conn := ts.Pool.Get()
 	defer conn.Close()
@@ -43,19 +43,18 @@ func (ts RedisTokenStore) VerifyToken(token string) bool {
 	exists, err := redis.Bool(conn.Do("EXISTS", TokenKeyPrefix+":"+token))
 	if err != nil {
 		log.Printf("Problem verifying token: %s", err)
-		return false
+		return "", false
 	}
 
 	if !exists {
-		return false
+		return "", false
 	}
 
-	value, err := redis.String(conn.Do("GET", TokenKeyPrefix+":"+token))
+	username, err := redis.String(conn.Do("GET", TokenKeyPrefix+":"+token))
 	if err != nil {
 		log.Printf("Problem verifying token: %s", err)
-		return false
+		return "", false
 	}
 
-	log.Printf("Found %s", value)
-	return true
+	return username, true
 }
