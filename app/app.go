@@ -13,9 +13,7 @@ type App struct {
 	Tokens stores.TokenStore
 }
 
-func NewApp() App {
-	ts := stores.InMemoryTokenStore{}
-
+func NewApp(ts stores.TokenStore) App {
 	// seed with an initial user
 	us := userStore{
 		"admin": "admin1000",

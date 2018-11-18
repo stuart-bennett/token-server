@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/stuart-bennett/token-server/stores"
 	"github.com/stuart-bennett/token-server/testhelper"
 	"net/http"
 	"net/http/httptest"
@@ -57,7 +58,7 @@ func TestMain(t *testing.T) {
 }
 
 func setup() {
-	ts = httptest.NewServer(ConfigureMux())
+	ts = httptest.NewServer(ConfigureMux(stores.InMemoryTokenStore{}))
 	c = http.Client{}
 }
 

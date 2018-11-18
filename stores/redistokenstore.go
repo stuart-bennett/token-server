@@ -13,6 +13,7 @@ type RedisTokenStore struct {
 }
 
 func NewRedisTokenStore(addr string) RedisTokenStore {
+	log.Printf("[RedisTokenStore] Connecting to %s", addr)
 	pool := redis.Pool{
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
