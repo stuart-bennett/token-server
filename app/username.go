@@ -23,20 +23,21 @@ func (a App) Username(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if a.Tokens.VerifyToken(token) {
-		resp, err := json.Marshal(UsernameResponse{
-			Username: "admin",
-		})
-
-		if err != nil {
-			log.Printf("Couldn't create json response because %s", err)
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-
-		w.Write(resp)
+	if !a.Tokens.VerifyToken(token) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
-	w.WriteHeader(http.StatusUnauthorized)
+	resp, err := json.Marshal(UsernameResponse{
+		Username: "admin",
+	})
+
+	if err != nil {
+		log.Printf("Couldn't create json response because %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Write(resp)
 }
 
 func validateUsernameRequest(r *http.Request) (string, bool) {
