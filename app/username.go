@@ -23,13 +23,14 @@ func (a App) Username(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !a.Tokens.VerifyToken(token) {
+	username, ok := a.Tokens.VerifyToken(token)
+	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
 	resp, err := json.Marshal(UsernameResponse{
-		Username: "admin",
+		Username: username,
 	})
 
 	if err != nil {
