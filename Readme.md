@@ -1,5 +1,7 @@
 # Token Server
 
+[![Build Status](https://travis-ci.org/stuart-bennett/token-server.svg?branch=master)](https://travis-ci.org/stuart-bennett/token-server)
+
 A simple server written in Go that handles authentication and responds to requests for authentication tokens.
 
 ## Running the app
