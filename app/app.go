@@ -7,6 +7,7 @@ import (
 )
 
 const TokenRequestHeader string = "X-Auth-Token"
+
 type userStore map[string]string
 type tokenStore map[string]string
 type App struct {

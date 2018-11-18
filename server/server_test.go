@@ -17,7 +17,7 @@ func TestMain(t *testing.T) {
 		t.Run("Should only accept POST requests", func(t *testing.T) {
 			testhelper.OnlyAcceptsMethod(
 				http.MethodPost,
-				ts.URL + LoginPath,
+				ts.URL+LoginPath,
 				t, &c)
 		})
 
@@ -38,7 +38,7 @@ func TestMain(t *testing.T) {
 		t.Run("Should only accept GET requests", func(t *testing.T) {
 			testhelper.OnlyAcceptsMethod(
 				http.MethodGet,
-				ts.URL + UsernamePath,
+				ts.URL+UsernamePath,
 				t, &c)
 		})
 
@@ -56,7 +56,6 @@ func TestMain(t *testing.T) {
 	})
 }
 
-
 func setup() {
 	ts = httptest.NewServer(ConfigureMux())
 	c = http.Client{}
@@ -65,4 +64,3 @@ func setup() {
 func teardown() {
 	ts.Close()
 }
-

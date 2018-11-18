@@ -90,5 +90,4 @@ func testValidToken(t *testing.T, ts *httptest.Server) {
 	if resp.Username != "admin" {
 		t.Fail()
 	}
-} 
-
+}

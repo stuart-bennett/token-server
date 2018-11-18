@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	LoginPath string = "/login"
+	LoginPath    string = "/login"
 	UsernamePath string = "/username"
 )
 
