@@ -28,7 +28,7 @@ func (ts Redis) NewToken(user string) string {
 	token := newToken()
 	conn := ts.Pool.Get()
 	defer conn.Close()
-	_, err := conn.Do("SET", TokenKeyPrefix+":"+token, user)
+	_, err := conn.Do("SET", makeKeyName(token), user)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func (ts Redis) VerifyToken(token string) (string, bool) {
 	conn := ts.Pool.Get()
 	defer conn.Close()
 
-	exists, err := redis.Bool(conn.Do("EXISTS", TokenKeyPrefix+":"+token))
+	exists, err := redis.Bool(conn.Do("EXISTS", makeKeyName(token)))
 	if err != nil {
 		log.Printf("Problem verifying token: %s", err)
 		return "", false
@@ -51,11 +51,15 @@ func (ts Redis) VerifyToken(token string) (string, bool) {
 		return "", false
 	}
 
-	username, err := redis.String(conn.Do("GET", TokenKeyPrefix+":"+token))
+	username, err := redis.String(conn.Do("GET", makeKeyName(token)))
 	if err != nil {
 		log.Printf("Problem verifying token: %s", err)
 		return "", false
 	}
 
 	return username, true
+}
+
+func makeKeyName(s string) string {
+	return TokenKeyPrefix + ":" + s
 }
