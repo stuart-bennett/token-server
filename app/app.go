@@ -1,5 +1,11 @@
 package app
 
+import (
+	"net/http"
+
+	"github.com/stuart-bennett/token-server/urls"
+)
+
 const TokenRequestHeader string = "X-Auth-Token"
 
 type TokenStore interface {
@@ -14,7 +20,7 @@ type App struct {
 	Tokens TokenStore
 }
 
-func NewApp(ts TokenStore) App {
+func New(ts TokenStore) App {
 	// seed with an initial user
 	us := userStore{
 		"admin":        "admin1000",
@@ -31,4 +37,12 @@ func (a App) Authenticate(u string, p string) bool {
 	}
 
 	return p == storedPwd
+}
+
+func ConfigureMux(tokenStore TokenStore) *http.ServeMux {
+	endpoints := New(tokenStore)
+	m := http.NewServeMux()
+	m.Handle(string(urls.Login), http.HandlerFunc(endpoints.Login))
+	m.Handle(string(urls.Username), http.HandlerFunc(endpoints.Username))
+	return m
 }

@@ -10,11 +10,7 @@ import (
 	"github.com/stuart-bennett/token-server/tokenstore"
 )
 
-const (
-	LoginPath    string = "/login"
-	UsernamePath string = "/username"
-	ListenPort   int    = 8000
-)
+const ListenPort int = 8000
 
 var redisAddr = flag.String(
 	"r", "",
@@ -24,15 +20,7 @@ func main() {
 	flag.Parse()
 	log.Fatal(http.ListenAndServe(
 		":"+strconv.Itoa(ListenPort),
-		ConfigureMux(getStore())))
-}
-
-func ConfigureMux(tokenStore app.TokenStore) *http.ServeMux {
-	endpoints := app.NewApp(tokenStore)
-	m := http.NewServeMux()
-	m.Handle(LoginPath, http.HandlerFunc(endpoints.Login))
-	m.Handle(UsernamePath, http.HandlerFunc(endpoints.Username))
-	return m
+		app.ConfigureMux(getStore())))
 }
 
 func getStore() app.TokenStore {

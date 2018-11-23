@@ -1,12 +1,14 @@
-package main
+package main_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stuart-bennett/token-server/app"
 	"github.com/stuart-bennett/token-server/testhelper"
 	"github.com/stuart-bennett/token-server/tokenstore"
+	"github.com/stuart-bennett/token-server/urls"
 )
 
 var ts *httptest.Server
@@ -19,7 +21,7 @@ func TestMain(t *testing.T) {
 		t.Run("Should only accept POST requests", func(t *testing.T) {
 			testhelper.OnlyAcceptsMethod(
 				http.MethodPost,
-				ts.URL+LoginPath,
+				urls.Login.Abs(ts),
 				t, &c)
 		})
 
@@ -40,7 +42,7 @@ func TestMain(t *testing.T) {
 		t.Run("Should only accept GET requests", func(t *testing.T) {
 			testhelper.OnlyAcceptsMethod(
 				http.MethodGet,
-				ts.URL+UsernamePath,
+				urls.Username.Abs(ts),
 				t, &c)
 		})
 
@@ -59,7 +61,7 @@ func TestMain(t *testing.T) {
 }
 
 func setup() {
-	ts = httptest.NewServer(ConfigureMux(tokenstore.InMemory{}))
+	ts = httptest.NewServer(app.ConfigureMux(tokenstore.InMemory{}))
 	c = http.Client{}
 }
 

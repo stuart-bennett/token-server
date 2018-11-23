@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/stuart-bennett/token-server/app"
 	"github.com/stuart-bennett/token-server/testhelper"
+	"github.com/stuart-bennett/token-server/urls"
 )
 
 func testMalformedRequest(t *testing.T, ts *httptest.Server) {
@@ -24,7 +25,7 @@ func testMalformedRequest(t *testing.T, ts *httptest.Server) {
 	for _, req := range reqs {
 		t.Run(req, func(t *testing.T) {
 			res, err := http.Post(
-				ts.URL+LoginPath,
+				urls.Login.Abs(ts),
 				"application/json",
 				bytes.NewBufferString(req))
 
@@ -45,7 +46,7 @@ func testMalformedRequest(t *testing.T, ts *httptest.Server) {
 
 func testInvalidCredentials(t *testing.T, ts *httptest.Server) {
 	res, err := http.Post(
-		ts.URL+LoginPath,
+		urls.Login.Abs(ts),
 		"application/json",
 		testhelper.NewLoginRequestJson("admin", "admin999"))
 
@@ -60,7 +61,7 @@ func testInvalidCredentials(t *testing.T, ts *httptest.Server) {
 
 func testLoginResponse(t *testing.T, ts *httptest.Server) {
 	res, err := http.Post(
-		ts.URL+LoginPath,
+		urls.Login.Abs(ts),
 		"application/json",
 		testhelper.NewLoginRequestJson("admin", "admin1000"))
 

@@ -53,7 +53,7 @@ func OnlyAcceptsMethod(m string, target string, t *testing.T, c *http.Client) {
 	})
 
 	for _, m := range ms {
-			t.Run(m, func (t *testing.T) {
+		t.Run(m, func(t *testing.T) {
 			req, err := http.NewRequest(m, target, nil)
 			if err != nil {
 				t.Error(err)
@@ -70,7 +70,7 @@ func OnlyAcceptsMethod(m string, target string, t *testing.T, c *http.Client) {
 		})
 	}
 
-	t.Run(m, func (t *testing.T) {
+	t.Run(m, func(t *testing.T) {
 		req, err := http.NewRequest(m, target, nil)
 		if err != nil {
 			t.Error(err)

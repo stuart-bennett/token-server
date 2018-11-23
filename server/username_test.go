@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"encoding/json"
@@ -9,11 +9,12 @@ import (
 
 	"github.com/stuart-bennett/token-server/app"
 	"github.com/stuart-bennett/token-server/testhelper"
+	"github.com/stuart-bennett/token-server/urls"
 )
 
 func testMissingAuthHeader(t *testing.T, ts *httptest.Server) {
 	// no X-Auth-Token header!
-	res, err := http.Get(ts.URL + UsernamePath)
+	res, err := http.Get(urls.Username.Abs(ts))
 	if err != nil {
 		t.Error(err)
 	}
@@ -24,7 +25,7 @@ func testMissingAuthHeader(t *testing.T, ts *httptest.Server) {
 }
 
 func testInvalidToken(t *testing.T, ts *httptest.Server) {
-	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
+	req, err := http.NewRequest(http.MethodGet, urls.Username.Abs(ts), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -42,7 +43,7 @@ func testInvalidToken(t *testing.T, ts *httptest.Server) {
 
 func acquireValidToken() (string, error) {
 	res, err := http.Post(
-		ts.URL+LoginPath,
+		urls.Login.Abs(ts),
 		"application/json",
 		testhelper.NewLoginRequestJson("admin", "admin1000"))
 
@@ -63,7 +64,7 @@ func acquireValidToken() (string, error) {
 }
 
 func testValidToken(t *testing.T, ts *httptest.Server) {
-	req, err := http.NewRequest(http.MethodGet, ts.URL+UsernamePath, nil)
+	req, err := http.NewRequest(http.MethodGet, urls.Username.Abs(ts), nil)
 	if err != nil {
 		t.Error(err)
 	}
