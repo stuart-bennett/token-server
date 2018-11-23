@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stuart-bennett/token-server/app"
-	"github.com/stuart-bennett/token-server/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stuart-bennett/token-server/app"
+	"github.com/stuart-bennett/token-server/testhelper"
 )
 
 func testMissingAuthHeader(t *testing.T, ts *httptest.Server) {

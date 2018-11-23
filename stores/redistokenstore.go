@@ -1,9 +1,10 @@
 package stores
 
 import (
-	"github.com/gomodule/redigo/redis"
 	"log"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 const TokenKeyPrefix string = "token"

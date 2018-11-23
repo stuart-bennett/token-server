@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stuart-bennett/token-server/app"
-	"github.com/stuart-bennett/token-server/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stuart-bennett/token-server/app"
+	"github.com/stuart-bennett/token-server/testhelper"
 )
 
 func testMalformedRequest(t *testing.T, ts *httptest.Server) {

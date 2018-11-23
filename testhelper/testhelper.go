@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/stuart-bennett/token-server/app"
 	"net/http"
 	"testing"
+
+	"github.com/stuart-bennett/token-server/app"
 )
 
 type StandardHttpMethods [8]string

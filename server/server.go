@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/stuart-bennett/token-server/app"
-	"github.com/stuart-bennett/token-server/stores"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/stuart-bennett/token-server/app"
+	"github.com/stuart-bennett/token-server/stores"
 )
 
 const (

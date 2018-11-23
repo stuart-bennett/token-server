@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/stuart-bennett/token-server/stores"
-	"github.com/stuart-bennett/token-server/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stuart-bennett/token-server/stores"
+	"github.com/stuart-bennett/token-server/testhelper"
 )
 
 var ts *httptest.Server
