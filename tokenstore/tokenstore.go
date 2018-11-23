@@ -2,7 +2,6 @@ package tokenstore
 
 import (
 	"crypto/rand"
-	"crypto/sha512"
 	"fmt"
 )
 
@@ -15,6 +14,5 @@ func newToken() string {
 		panic(fmt.Sprintf("Could not generate a secure random byte sequence to create a login token because %s", err))
 	}
 
-	checksum := sha512.Sum512(b)
-	return fmt.Sprintf("%x", checksum)
+	return fmt.Sprintf("%x", b)
 }
