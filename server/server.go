@@ -27,7 +27,7 @@ func main() {
 		ConfigureMux(getStore())))
 }
 
-func ConfigureMux(tokenStore stores.TokenStore) *http.ServeMux {
+func ConfigureMux(tokenStore app.TokenStore) *http.ServeMux {
 	endpoints := app.NewApp(tokenStore)
 	m := http.NewServeMux()
 	m.Handle(LoginPath, http.HandlerFunc(endpoints.Login))
@@ -35,7 +35,7 @@ func ConfigureMux(tokenStore stores.TokenStore) *http.ServeMux {
 	return m
 }
 
-func getStore() stores.TokenStore {
+func getStore() app.TokenStore {
 	if *redisAddr != "" {
 		log.Printf("Using Redis Token Store @ %s", *redisAddr)
 		return stores.NewRedisTokenStore(*redisAddr)

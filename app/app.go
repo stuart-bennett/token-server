@@ -1,19 +1,20 @@
 package app
 
-import (
-	"github.com/stuart-bennett/token-server/stores"
-)
-
 const TokenRequestHeader string = "X-Auth-Token"
+
+type TokenStore interface {
+	NewToken(user string) string
+	VerifyToken(token string) (string, bool)
+}
 
 type userStore map[string]string
 
 type App struct {
 	Users  userStore
-	Tokens stores.TokenStore
+	Tokens TokenStore
 }
 
-func NewApp(ts stores.TokenStore) App {
+func NewApp(ts TokenStore) App {
 	// seed with an initial user
 	us := userStore{
 		"admin":        "admin1000",

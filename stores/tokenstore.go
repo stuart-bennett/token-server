@@ -6,11 +6,6 @@ import (
 	"fmt"
 )
 
-type TokenStore interface {
-	NewToken(user string) string
-	VerifyToken(token string) (string, bool)
-}
-
 func newToken() string {
 	// A sequence of 100 random numbers
 	n := 100
