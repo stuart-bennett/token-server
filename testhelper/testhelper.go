@@ -53,6 +53,24 @@ func OnlyAcceptsMethod(m string, target string, t *testing.T, c *http.Client) {
 	})
 
 	for _, m := range ms {
+			t.Run(m, func (t *testing.T) {
+			req, err := http.NewRequest(m, target, nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			res, err := c.Do(req)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if res.StatusCode != http.StatusMethodNotAllowed {
+				t.Errorf("Method = %s, Response Status: %d", m, res.StatusCode)
+			}
+		})
+	}
+
+	t.Run(m, func (t *testing.T) {
 		req, err := http.NewRequest(m, target, nil)
 		if err != nil {
 			t.Error(err)
@@ -63,22 +81,8 @@ func OnlyAcceptsMethod(m string, target string, t *testing.T, c *http.Client) {
 			t.Error(err)
 		}
 
-		if res.StatusCode != http.StatusMethodNotAllowed {
-			t.Errorf("Method = %s, Response Status: %d", m, res.StatusCode)
+		if res.StatusCode == http.StatusMethodNotAllowed {
+			t.Errorf("Method = %s, Response Status: %d", http.MethodPost, res.StatusCode)
 		}
-	}
-
-	req, err := http.NewRequest(m, target, nil)
-	if err != nil {
-		t.Error(err)
-	}
-
-	res, err := c.Do(req)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if res.StatusCode == http.StatusMethodNotAllowed {
-		t.Errorf("Method = %s, Response Status: %d", http.MethodPost, res.StatusCode)
-	}
+	})
 }

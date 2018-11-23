@@ -22,22 +22,24 @@ func testMalformedRequest(t *testing.T, ts *httptest.Server) {
 	}
 
 	for _, req := range reqs {
-		res, err := http.Post(
-			ts.URL+LoginPath,
-			"application/json",
-			bytes.NewBufferString(req))
+		t.Run(req, func(t *testing.T) {
+			res, err := http.Post(
+				ts.URL+LoginPath,
+				"application/json",
+				bytes.NewBufferString(req))
 
-		if err != nil {
-			t.Error(err)
-		}
+			if err != nil {
+				t.Error(err)
+			}
 
-		if res.StatusCode != http.StatusBadRequest {
-			t.Errorf(
-				"%s - Got: %d. Want: %d",
-				req,
-				res.StatusCode,
-				http.StatusBadRequest)
-		}
+			if res.StatusCode != http.StatusBadRequest {
+				t.Errorf(
+					"%s - Got: %d. Want: %d",
+					req,
+					res.StatusCode,
+					http.StatusBadRequest)
+			}
+		})
 	}
 }
 
