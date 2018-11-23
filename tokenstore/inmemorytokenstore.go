@@ -1,12 +1,12 @@
-package stores
+package tokenstore
 
 import "sync"
 
-type InMemoryTokenStore map[string]string
+type InMemory map[string]string
 
 var mu = sync.RWMutex{}
 
-func (ts InMemoryTokenStore) NewToken(user string) string {
+func (ts InMemory) NewToken(user string) string {
 	token := newToken()
 	mu.Lock()
 	ts[token] = user
@@ -14,7 +14,7 @@ func (ts InMemoryTokenStore) NewToken(user string) string {
 	return token
 }
 
-func (ts InMemoryTokenStore) VerifyToken(token string) (string, bool) {
+func (ts InMemory) VerifyToken(token string) (string, bool) {
 	mu.RLock()
 	username, ok := ts[token]
 	mu.RUnlock()

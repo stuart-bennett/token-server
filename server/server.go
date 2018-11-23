@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/stuart-bennett/token-server/app"
-	"github.com/stuart-bennett/token-server/stores"
+	"github.com/stuart-bennett/token-server/tokenstore"
 )
 
 const (
@@ -38,9 +38,9 @@ func ConfigureMux(tokenStore app.TokenStore) *http.ServeMux {
 func getStore() app.TokenStore {
 	if *redisAddr != "" {
 		log.Printf("Using Redis Token Store @ %s", *redisAddr)
-		return stores.NewRedisTokenStore(*redisAddr)
+		return tokenstore.NewRedis(*redisAddr)
 	}
 
 	log.Printf("Using in-memory token store")
-	return stores.InMemoryTokenStore{}
+	return tokenstore.InMemory{}
 }

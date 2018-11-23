@@ -1,4 +1,4 @@
-package stores
+package tokenstore
 
 import (
 	"log"
@@ -9,11 +9,11 @@ import (
 
 const TokenKeyPrefix string = "token"
 
-type RedisTokenStore struct {
+type Redis struct {
 	Pool *redis.Pool
 }
 
-func NewRedisTokenStore(addr string) RedisTokenStore {
+func NewRedis(addr string) Redis {
 	log.Printf("[RedisTokenStore] Connecting to %s", addr)
 	pool := redis.Pool{
 		MaxIdle:     3,
@@ -21,10 +21,10 @@ func NewRedisTokenStore(addr string) RedisTokenStore {
 		Dial:        func() (redis.Conn, error) { return redis.Dial("tcp", addr) },
 	}
 
-	return RedisTokenStore{Pool: &pool}
+	return Redis{Pool: &pool}
 }
 
-func (ts RedisTokenStore) NewToken(user string) string {
+func (ts Redis) NewToken(user string) string {
 	token := newToken()
 	conn := ts.Pool.Get()
 	defer conn.Close()
@@ -36,7 +36,7 @@ func (ts RedisTokenStore) NewToken(user string) string {
 	return token
 }
 
-func (ts RedisTokenStore) VerifyToken(token string) (string, bool) {
+func (ts Redis) VerifyToken(token string) (string, bool) {
 	log.Printf(token)
 	conn := ts.Pool.Get()
 	defer conn.Close()

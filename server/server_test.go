@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stuart-bennett/token-server/stores"
 	"github.com/stuart-bennett/token-server/testhelper"
+	"github.com/stuart-bennett/token-server/tokenstore"
 )
 
 var ts *httptest.Server
@@ -59,7 +59,7 @@ func TestMain(t *testing.T) {
 }
 
 func setup() {
-	ts = httptest.NewServer(ConfigureMux(stores.InMemoryTokenStore{}))
+	ts = httptest.NewServer(ConfigureMux(tokenstore.InMemory{}))
 	c = http.Client{}
 }
 
