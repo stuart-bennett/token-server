@@ -43,6 +43,7 @@ func (a App) Login(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Couldn't create json response because %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Write(resp)

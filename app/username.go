@@ -36,6 +36,7 @@ func (a App) Username(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Couldn't create json response because %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
